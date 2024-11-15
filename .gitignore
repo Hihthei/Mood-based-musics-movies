@@ -1,2 +1,5 @@
 //gitignore
 .idea/
+get-pip.py
+poetry.lock
+.python-version
