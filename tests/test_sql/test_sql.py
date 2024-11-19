@@ -1,12 +1,11 @@
-import mysql.connector
+import pytest
+from mysql.connector.cursor_cext import CMySQLCursor
+from Source.sql.sql import sql_show_databases
 
-password = input()
 
-mydb = mysql.connector.connect(host="localhost", user="root", passwd=password)
-
-mycursor = mydb.cursor()
-
-mycursor.execute("show databases")
-
-for i in mycursor:
-    print(i)
+@pytest.mark.parametrize("password, expected", [
+    ("!Cd2@5Cprb", CMySQLCursor),
+    ("", type(None))
+])
+def test_sql_show_databases(password:str, expected):
+    assert type(sql_show_databases(password)) == expected

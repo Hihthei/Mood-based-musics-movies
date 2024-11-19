@@ -7,6 +7,7 @@ package-mode = false
 python = "3.12.7"
 pyside6 = "^6.8.0.2"
 mysql-connector-python = "^9.1.0"
+pytest = "^8.3.3"
 
 
 [build-system]
