@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from Source.Security.DBCommunicate import DBCommunicate
-from Source.Security.HashPswd import hash_pswd
+from Source.Security.HashPswd import hash_pswd, verify_pswd
 
 
 class NewUser(tk.Frame):
@@ -78,9 +78,8 @@ class NewUser(tk.Frame):
             return
 
         password = hash_pswd(password)
-        confirm_password = hash_pswd(confirm_password)
 
-        if password != confirm_password:
+        if not verify_pswd(confirm_password, password):
             messagebox.showerror("Error", "Passwords do not match")
             return
 
