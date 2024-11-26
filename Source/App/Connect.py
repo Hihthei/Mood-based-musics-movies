@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from Source.Security.DBCommunicate import DBCommunicate
-from Source.Security.HashPswd import hash_pswd
+from Source.Security.HashPswd import verify_pswd
 
 
 class Connect(tk.Frame):
@@ -45,9 +45,9 @@ class Connect(tk.Frame):
         self.__load_hashed_pswd()
 
         username = self.username_entry.get()
-        password = hash_pswd(self.password_entry.get())
+        password = self.password_entry.get()
 
-        if username in self.hassed_pswd and password == self.hassed_pswd[username]:
+        if username in self.hassed_pswd and verify_pswd(password, self.hassed_pswd[username]):
             self.username_entry.delete(0, "end")
             self.password_entry.delete(0, "end")
 
