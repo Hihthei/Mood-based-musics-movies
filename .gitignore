@@ -3,3 +3,4 @@
 get-pip.py
 poetry.lock
 .python-version
+*__pycache__/
