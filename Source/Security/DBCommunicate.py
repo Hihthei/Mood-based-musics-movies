@@ -5,7 +5,7 @@ from tkinter import messagebox
 class DBCommunicate:
     def __init__(self):
         self.hassed_pswd = {}
-        self.file_path = "../Security/tmp_psd_base.json"
+        self.file_path = "tmp_psd_base.json"
         self.check_database()
 
     def check_database(self):
@@ -23,7 +23,7 @@ class DBCommunicate:
 
     def load_hashed_pswd(self):
         try:
-            with open("../Security/tmp_psd_base.json", "r") as pf:
+            with open("tmp_psd_base.json", "r") as pf:
                 self.hassed_pswd = json.load(pf)
 
         except FileNotFoundError:
@@ -44,7 +44,7 @@ class DBCommunicate:
     def save_hashed_pswd(self, hassed_pswd: dict):
         self.hassed_pswd = hassed_pswd
         try:
-            with open("../Security/tmp_psd_base.json", "w") as pf:
+            with open("tmp_psd_base.json", "w") as pf:
                 json.dump(self.hassed_pswd, pf, indent=4) #type: ignore
 
         except Exception as e:
