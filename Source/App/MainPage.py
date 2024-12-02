@@ -43,16 +43,6 @@ class MainPage(tk.Frame):
         for column, width in zip(self.__tree["columns"], [150, 100, 100]):
             self.__tree.column(column, width=width)
 
-        ''' '''
-        data = [
-            ("Inception", "Movie", "Exciting"),
-            ("Bohemian Rhapsody", "Music", "Inspiring"),
-            ("The Office", "Movie", "Calm"),
-        ]
-        for item in data:
-            self.__tree.insert("", "end", values=item)
-        # '''
-
         scrollbar = ttk.Scrollbar(frames, orient="vertical", command=self.__tree.yview)
         self.__tree.configure(yscroll=scrollbar.set)
 
