@@ -12,7 +12,7 @@ class Database:
             self.__database = None
             return e.errno
         
-    def __create_Database(self, user:str, password:str):
+    def __create_database(self, user:str, password:str):
         try:
             self.__database = mysql.connector.connect(host="localhost", user=user, passwd=password)
             terminal = self.__database.cursor()

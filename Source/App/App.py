@@ -5,6 +5,7 @@ from Source.App.NewUser import NewUser
 from Source.App.Connect import Connect
 from Source.App.MainPage import MainPage
 
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
