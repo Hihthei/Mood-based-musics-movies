@@ -4,3 +4,4 @@ get-pip.py
 poetry.lock
 .python-version
 *__pycache__/
+*.json
