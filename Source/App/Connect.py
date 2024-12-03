@@ -36,10 +36,10 @@ class Connect(ctk.CTkFrame):
         back_button.pack(pady=20, anchor="center")
 
         self.DBCommunicate = DBCommunicate()
-        self.hassed_pswd = {}
+        self.__hassed_pswd = {}
 
     def __load_hashed_pswd(self):
-        self.hassed_pswd = self.DBCommunicate.load_hashed_pswd()
+        self.__hassed_pswd = self.DBCommunicate.load_hashed_pswd()
 
     def submit_login(self):
         self.__load_hashed_pswd()
@@ -47,7 +47,7 @@ class Connect(ctk.CTkFrame):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if username in self.hassed_pswd and verify_pswd(password, self.hassed_pswd[username]):
+        if username in self.__hassed_pswd and verify_pswd(password, self.__hassed_pswd[username]):
             self.username_entry.delete(0, "end")
             self.password_entry.delete(0, "end")
 

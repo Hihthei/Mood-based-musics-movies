@@ -9,6 +9,16 @@ class FirstPage(ctk.CTkFrame):
         label = ctk.CTkLabel(self, text="Cry in my SQL", font=("Arial", 24))
         label.pack(pady=30)
 
+        dark_mode_var = ctk.BooleanVar(value=True)
+
+        dark_mode_switch = ctk.CTkSwitch(
+            self,
+            text="Dark Mode",
+            variable=dark_mode_var,
+            command=lambda: controller.set_dark_mode(dark_mode_var.get())
+        )
+        dark_mode_switch.pack(pady=10)
+
         new_user_button = ctk.CTkButton(
             self, text="New User", command=lambda: controller.show_frame("NewUser")
         )

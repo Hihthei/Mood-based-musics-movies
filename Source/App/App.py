@@ -15,7 +15,7 @@ class App(ctk.CTk):
         self.geometry("800x600")
         self.resizable(False, False)
 
-        ctk.set_appearance_mode("dark")
+        self.set_dark_mode(True)
         ctk.set_default_color_theme("blue")
 
         self.grid_rowconfigure(1, weight=1)
@@ -41,6 +41,12 @@ class App(ctk.CTk):
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
+
+    def set_dark_mode(self, value):
+        if value:
+            ctk.set_appearance_mode("dark")
+        else :
+            ctk.set_appearance_mode("light")
 
 
 app = App()

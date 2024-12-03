@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import random
+import json
 
 
 class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
@@ -13,6 +14,7 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+        self.__data = {}
         self.__grid_config()
 
         button_frame = ctk.CTkFrame(self)
@@ -34,9 +36,9 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
         self.__tree = ctk.CTkScrollableFrame(frames, width=600, height=300)
         self.__tree.grid(row=0, column=0, sticky="nsew")
 
-        self.__data = self.__load_data()
+        self.__load_data()
 
-        for i, (title, content_type, mood) in enumerate(self.__data):
+        for i, (key, (title, content_type, mood)) in enumerate(self.__data.items()):
             ctk.CTkLabel(self.__tree, text=title).grid(row=i, column=0, padx=5, pady=5)
             ctk.CTkLabel(self.__tree, text=content_type).grid(row=i, column=1, padx=5, pady=5)
             ctk.CTkLabel(self.__tree, text=mood).grid(row=i, column=2, padx=5, pady=5)
@@ -54,7 +56,11 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
         shuffle.pack(pady=5)
 
     def __load_data(self):
-        return []
+        try:
+            with open('tmp_songs_base.json', 'r') as file:
+                self.__data = json.load(file)
+        except FileNotFoundError:
+            self.__data = {}
 
     def __search(self):
         pass
