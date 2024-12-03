@@ -52,6 +52,9 @@ class MainPage(tk.Frame):
         button_frame = tk.Frame(self)
         button_frame.grid(row=1, column=2, padx=10, pady=10, sticky="ns")
 
+        playlist_button = tk.Button(button_frame, text="Playlist manager", command=lambda: self.controller.show_frame("Playlist"))
+        playlist_button.pack(pady=5)
+
         search = tk.Button(button_frame, text="Search", command=lambda: self.__search())
         search.pack(pady=5)
 
@@ -61,7 +64,6 @@ class MainPage(tk.Frame):
 
     def __search(self):
         pass
-
 
     def __shuffle(self):
         data = [self.__tree.item(row)["values"] for row in self.__tree.get_children()]

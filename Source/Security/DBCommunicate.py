@@ -4,18 +4,18 @@ from tkinter import messagebox
 
 class DBCommunicate:
     def __init__(self):
-        self.hassed_pswd = {}
-        self.file_path = "tmp_psd_base.json"
-        self.check_database()
+        self.__hassed_pswd = {}
+        self.__file_path = "../Security/tmp_psd_base.json"
+        self.__check_database()
 
-    def check_database(self):
+    def __check_database(self):
         try:
-            if not os.path.exists(self.file_path) or os.stat(self.file_path).st_size == 0:
-                with open(self.file_path, "w") as pf:
+            if not os.path.exists(self.__file_path) or os.stat(self.__file_path).st_size == 0:
+                with open(self.__file_path, "w") as pf:
                     json.dump({}, pf) # type: ignore
 
         except json.JSONDecodeError:
-            with open(self.file_path, "w") as pf:
+            with open(self.__file_path, "w") as pf:
                 json.dump({}, pf) # type: ignore
 
         except Exception as e:
@@ -23,7 +23,7 @@ class DBCommunicate:
 
     def load_hashed_pswd(self):
         try:
-            with open("tmp_psd_base.json", "r") as pf:
+            with open(self.__file_path, "r") as pf:
                 self.hassed_pswd = json.load(pf)
 
         except FileNotFoundError:
@@ -44,7 +44,7 @@ class DBCommunicate:
     def save_hashed_pswd(self, hassed_pswd: dict):
         self.hassed_pswd = hassed_pswd
         try:
-            with open("tmp_psd_base.json", "w") as pf:
+            with open(self.__file_path, "w") as pf:
                 json.dump(self.hassed_pswd, pf, indent=4) #type: ignore
 
         except Exception as e:
@@ -52,7 +52,7 @@ class DBCommunicate:
 
     def reinitialise_database(self):
         try:
-            with open(self.file_path, "w") as pf:
+            with open(self.__file_path, "w") as pf:
                 json.dump({}, pf) # type: ignore
 
         except Exception as e:

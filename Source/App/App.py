@@ -4,6 +4,7 @@ from Source.App.FirstPage import FirstPage
 from Source.App.NewUser import NewUser
 from Source.App.Connect import Connect
 from Source.App.MainPage import MainPage
+from Source.App.PlaylistManager import Playlist
 
 
 class App(tk.Tk):
@@ -11,11 +12,11 @@ class App(tk.Tk):
         super().__init__()
 
         self.title("Cry in my SQL")
-        self.geometry("480x480")
+        self.geometry("600x500")
 
-        self.resizable(True, True)
+        self.resizable(False, False)
 
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
@@ -23,7 +24,8 @@ class App(tk.Tk):
             FirstPage,
             NewUser,
             Connect,
-            MainPage
+            MainPage,
+            Playlist
         )
 
         for Page in self.pages:
