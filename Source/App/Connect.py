@@ -1,39 +1,39 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
 
 from Source.Security.DBCommunicate import DBCommunicate
 from Source.Security.HashPswd import verify_pswd
 
 
-class Connect(tk.Frame):
+class Connect(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        label = tk.Label(self, text="Login interface", font=("Arial", 16))
+        label = ctk.CTkLabel(self, text="Login Interface", font=("Arial", 24))
         label.pack(pady=30, anchor="center")
 
-        username_label = tk.Label(self, text="Username:", font=("Arial", 16))
+        username_label = ctk.CTkLabel(self, text="Username:", font=("Arial", 16))
         username_label.pack(pady=5, anchor="center")
 
-        self.username_entry = tk.Entry(self)
+        self.username_entry = ctk.CTkEntry(self, width=200, font=("Arial", 14))
         self.username_entry.pack(pady=5, anchor="center")
 
-        password_label = tk.Label(self, text="Password:", font=("Arial", 16))
+        password_label = ctk.CTkLabel(self, text="Password:", font=("Arial", 16))
         password_label.pack(pady=5, anchor="center")
 
-        self.password_entry = tk.Entry(self, show="*", font=("Arial", 16))
+        self.password_entry = ctk.CTkEntry(self, width=200, show="*", font=("Arial", 14))
         self.password_entry.pack(pady=5, anchor="center")
 
-        connect_button = tk.Button(
-            self, text="Connect", command=lambda: self.submit_login()
+        connect_button = ctk.CTkButton(
+            self, text="Connect", command=self.submit_login, width=150
         )
-        connect_button.pack(pady=5, anchor="center")
+        connect_button.pack(pady=10, anchor="center")
 
-        back_button = tk.Button(
-            self, text="Back", command=lambda: controller.show_frame("FirstPage")
+        back_button = ctk.CTkButton(
+            self, text="Back", command=lambda: controller.show_frame("FirstPage"), width=150
         )
-        back_button.pack(pady=30)
+        back_button.pack(pady=20, anchor="center")
 
         self.DBCommunicate = DBCommunicate()
         self.hassed_pswd = {}
@@ -52,5 +52,6 @@ class Connect(tk.Frame):
             self.password_entry.delete(0, "end")
 
             self.controller.show_frame("MainPage")
+
         else:
             messagebox.showerror("Error", "Username or password incorrect")

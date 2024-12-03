@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 
 from Source.App.FirstPage import FirstPage
 from Source.App.NewUser import NewUser
@@ -7,14 +7,16 @@ from Source.App.MainPage import MainPage
 from Source.App.PlaylistManager import Playlist
 
 
-class App(tk.Tk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("Cry in my SQL")
-        self.geometry("600x500")
-
+        self.geometry("800x600")
         self.resizable(False, False)
+
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("blue")
 
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -39,6 +41,7 @@ class App(tk.Tk):
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
+
 
 app = App()
 app.mainloop()
