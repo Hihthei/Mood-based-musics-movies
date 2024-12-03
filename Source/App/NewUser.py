@@ -1,45 +1,45 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
 
 from Source.Security.DBCommunicate import DBCommunicate
 from Source.Security.HashPswd import hash_pswd, verify_pswd
 
 
-class NewUser(tk.Frame):
+class NewUser(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        label = tk.Label(self, text="New User", font=("Arial", 16))
+        label = ctk.CTkLabel(self, text="New User", font=("Arial", 24))
         label.pack(pady=20, anchor="center")
 
-        username_label = tk.Label(self, text="Username:", font=("Arial", 16))
+        username_label = ctk.CTkLabel(self, text="Username:", font=("Arial", 16))
         username_label.pack(pady=5, anchor="center")
 
-        self.username_entry = tk.Entry(self)
+        self.username_entry = ctk.CTkEntry(self, width=200, font=("Arial", 14))
         self.username_entry.pack(pady=5, anchor="center")
 
-        password_label = tk.Label(self, text="Password:", font=("Arial", 16))
+        password_label = ctk.CTkLabel(self, text="Password:", font=("Arial", 16))
         password_label.pack(pady=5, anchor="center")
 
-        self.password_entry = tk.Entry(self, show="*", font=("Arial", 16))
+        self.password_entry = ctk.CTkEntry(self, width=200, show="*", font=("Arial", 14))
         self.password_entry.pack(pady=5, anchor="center")
 
-        confirm_password_label = tk.Label(self, text="Confirm password::", font=("Arial", 16))
+        confirm_password_label = ctk.CTkLabel(self, text="Confirm Password:", font=("Arial", 16))
         confirm_password_label.pack(pady=5, anchor="center")
 
-        self.confirm_password_entry = tk.Entry(self, show="*", font=("Arial", 16))
+        self.confirm_password_entry = ctk.CTkEntry(self, width=200, show="*", font=("Arial", 14))
         self.confirm_password_entry.pack(pady=5, anchor="center")
 
-        register_button = tk.Button(
-            self, text="Register", command=lambda: self.submit_new_user()
+        register_button = ctk.CTkButton(
+            self, text="Register", command=self.submit_new_user, width=150
         )
-        register_button.pack(pady=5, anchor="center")
+        register_button.pack(pady=10, anchor="center")
 
-        back_button = tk.Button(
-            self, text="Back", command=lambda: controller.show_frame("FirstPage")
+        back_button = ctk.CTkButton(
+            self, text="Back", command=lambda: controller.show_frame("FirstPage"), width=150
         )
-        back_button.pack(pady=30)
+        back_button.pack(pady=30, anchor="center")
 
         self.DBCommunicate = DBCommunicate()
         self.hassed_pswd = {}

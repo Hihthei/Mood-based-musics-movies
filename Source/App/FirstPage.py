@@ -1,23 +1,23 @@
-import tkinter as tk
+import customtkinter as ctk
 
 
-class FirstPage(tk.Frame):
+class FirstPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        label = tk.Label(self, text="Cry in my SQL", font=("Arial", 16))
-        label.pack(pady=30, anchor="center")
+        label = ctk.CTkLabel(self, text="Cry in my SQL", font=("Arial", 24))
+        label.pack(pady=30)
 
-        new_user_button = tk.Button(
+        new_user_button = ctk.CTkButton(
             self, text="New User", command=lambda: controller.show_frame("NewUser")
         )
-        new_user_button.pack(pady=30)
+        new_user_button.pack(pady=20)
 
-        connect = tk.Button(
+        connect = ctk.CTkButton(
             self, text="Connect", command=lambda: controller.show_frame("Connect")
         )
-        connect.pack(pady=30)
+        connect.pack(pady=20)
 
-        quit_button = tk.Button(self, text="Quit", command=controller.destroy)
-        quit_button.pack(pady=30)
+        quit_button = ctk.CTkButton(self, text="Quit", command=controller.destroy)
+        quit_button.pack(pady=20)
