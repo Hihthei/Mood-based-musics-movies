@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from Source.Security.DBCommunicate import DBCommunicate
+from Source.Database.DBCommunicate import DBCommunicate
 from Source.Security.HashPswd import verify_pswd
 
 
@@ -35,19 +35,17 @@ class Connect(ctk.CTkFrame):
         )
         back_button.pack(pady=20, anchor="center")
 
-        self.DBCommunicate = DBCommunicate()
-        self.__hassed_pswd = {}
-
-    def __load_hashed_pswd(self):
-        self.__hassed_pswd = self.DBCommunicate.load_hashed_pswd()
+        self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
 
     def submit_login(self):
-        self.__load_hashed_pswd()
-
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        if username in self.__hassed_pswd and verify_pswd(password, self.__hassed_pswd[username]):
+        identifiant, hashpassword = self.DBCommunicate.connect_User(username)
+
+        if verify_pswd(password, hashpassword):
+            _ = identifiant
+
             self.username_entry.delete(0, "end")
             self.password_entry.delete(0, "end")
 

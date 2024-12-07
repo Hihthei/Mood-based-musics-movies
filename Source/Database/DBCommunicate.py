@@ -1,6 +1,6 @@
 import mysql.connector
 
-class Database:
+class DBCommunicate:
     def __init__(self, user:str = None, password:str = None):
         self.connect(user, password)
         pass
@@ -55,6 +55,24 @@ class Database:
 
         terminal.close()
         return False
+    
+    def connect_User(self, username:str):
+        if self.__database == None:
+            return
+        
+        terminal = self.__database.cursor()
+
+        command = f"SELECT Users.userID, Users.hashpassword FROM Users WHERE Users.userName = '{username}'"
+
+        print(command+';')
+
+        terminal.execute(command)
+        result = terminal.fetchall()
+
+        if result:
+            terminal.close()
+            return result[0]
+        terminal.close()
 
     def add_User(self, username:str, hashPassword:str):
         if self.__database == None:
@@ -69,7 +87,9 @@ class Database:
         command = f"INSERT INTO Users (userName, hashPassword) VALUES ('{username}', '{hashPassword}')"
 
         terminal.execute(command)
+        self.__database.commit()
         terminal.close()
+
 
     def remove_User(self, username:str):
         if self.__database == None:
@@ -84,6 +104,7 @@ class Database:
         command = f"DELETE FROM Users WHERE Users.userName = '{username}'"
 
         terminal.execute(command)
+        self.__database.commit()
         terminal.close()
 
     def show_Table(self):
@@ -108,4 +129,8 @@ class Database:
     
         terminal.close()
 
-database = Database(user="root", password="!Cd2@5Cprb")
+    def close_connection(self):
+        self.__database.close()
+
+# dbCommunicate = DBCommunicate(user="root", password="!Cd2@5Cprb")
+# print(dbCommunicate.connect_User("Nico"))
