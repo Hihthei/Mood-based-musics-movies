@@ -1,5 +1,5 @@
 import pytest
-from Source.Database.database import Database
+from Source.Database.DBCommunicate import DBCommunicate
 
 @pytest.mark.parametrize("user, password, expected", [
     ("root", "!Cd2@5Cprb", None),
@@ -8,5 +8,5 @@ from Source.Database.database import Database
     ("", "", 1045)
 ])
 def test_Database_connect(user:str, password:str, expected):
-    database = Database()
+    database = DBCommunicate()
     assert database.connect(user=user, password=password) == expected

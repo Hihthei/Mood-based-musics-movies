@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from Source.Security.DBCommunicate import DBCommunicate
+from Source.Database.DBCommunicate import DBCommunicate
 from Source.Security.HashPswd import hash_pswd, verify_pswd
 
 
@@ -41,15 +41,11 @@ class NewUser(ctk.CTkFrame):
         )
         back_button.pack(pady=30, anchor="center")
 
-        self.DBCommunicate = DBCommunicate()
-        self.hassed_pswd = {}
+        self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
 
-    def __load_hashed_pswd(self):
-        self.hassed_pswd = self.DBCommunicate.load_hashed_pswd()
-
-    def __save_hashed_pswd(self):
+    def __save_new_user(self, username:str, hashpassword:str):
         try:
-            self.DBCommunicate.save_hashed_pswd(self.hassed_pswd.copy())
+            self.DBCommunicate.add_User(username, hashpassword)
 
             messagebox.showinfo("Success", "Successfully registered!")
 
@@ -58,13 +54,10 @@ class NewUser(ctk.CTkFrame):
             self.confirm_password_entry.delete(0, "end")
 
             self.controller.show_frame("FirstPage")
-
         except Exception as e:
-            messagebox.showerror("Error", f"Could not save user: {e}")
+            messagebox.showerror("Error", f"Username already exists :{e}")
 
     def submit_new_user(self):
-        self.__load_hashed_pswd()
-
         username = self.username_entry.get().strip()
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
@@ -73,16 +66,9 @@ class NewUser(ctk.CTkFrame):
             messagebox.showerror("Error", "All fields must be filled!")
             return
 
-        if username in self.hassed_pswd:
-            messagebox.showerror("Error", "Username already exists")
-            return
-
-        password = hash_pswd(password)
-
-        if not verify_pswd(confirm_password, password):
+        if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match")
             return
 
-        self.hassed_pswd[username] = password
-
-        self.__save_hashed_pswd()
+        hashed_password = hash_pswd(password)
+        self.__save_new_user(username, hashed_password)
