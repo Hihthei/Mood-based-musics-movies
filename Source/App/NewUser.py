@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from Source.Database.DBCommunicate import DBCommunicate
+from Source.Database.DBCommunicate import DBCommunicateError, DBCommunicate
 from Source.Security.HashPswd import hash_pswd, verify_pswd
 
 
@@ -41,7 +41,7 @@ class NewUser(ctk.CTkFrame):
         )
         back_button.pack(pady=30, anchor="center")
 
-        self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
+        self.DBCommunicate = parent.DBCommunicate
 
     def __save_new_user(self, username:str, hashpassword:str):
         try:
@@ -54,8 +54,8 @@ class NewUser(ctk.CTkFrame):
             self.confirm_password_entry.delete(0, "end")
 
             self.controller.show_frame("FirstPage")
-        except Exception as e:
-            messagebox.showerror("Error", f"Username already exists :{e}")
+        except DBCommunicateError as e:
+            messagebox.showerror("Error", e)
 
     def submit_new_user(self):
         username = self.username_entry.get().strip()

@@ -5,11 +5,18 @@ from Source.App.NewUser import NewUser
 from Source.App.Connect import Connect
 from Source.App.MainPage import MainPage
 from Source.App.PlaylistManager import Playlist
+from Source.Database.DBCommunicate import DBCommunicateError, DBCommunicate
 
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
+
+        try:
+            self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
+        except DBCommunicateError as e:
+            print(e)
+            self.quit()
 
         self.title("Cry in my SQL")
         self.geometry("800x600")
