@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from Source.Database.DBCommunicate import DBCommunicate
+from Source.Database.DBCommunicate import DBCommunicateError, DBCommunicate
 from Source.Security.HashPswd import verify_pswd
 
 
@@ -35,21 +35,24 @@ class Connect(ctk.CTkFrame):
         )
         back_button.pack(pady=20, anchor="center")
 
-        self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
+        self.DBCommunicate = parent.DBCommunicate
 
     def submit_login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        identifiant, hashpassword = self.DBCommunicate.connect_User(username)
+        try:
+            information = self.DBCommunicate.connect_User(username)
 
-        if verify_pswd(password, hashpassword):
-            _ = identifiant
+            if verify_pswd(password, information[1]):
+                _ = information[0]
 
-            self.username_entry.delete(0, "end")
-            self.password_entry.delete(0, "end")
+                self.username_entry.delete(0, "end")
+                self.password_entry.delete(0, "end")
 
-            self.controller.show_frame("MainPage")
+                self.controller.show_frame("MainPage")
+            else:
+                messagebox.showerror("Error", "Password incorrect")
 
-        else:
-            messagebox.showerror("Error", "Username or password incorrect")
+        except DBCommunicateError as e:
+            messagebox.showerror("Error", e)
