@@ -5,6 +5,7 @@ CREATE TABLE Mood (
 
 CREATE TABLE Content (
     contentID INT Primary Key auto_increment,
+    moodName VARCHAR(10) References Mood(moodName),
     title VARCHAR(50),
     author VARCHAR(50),
     isMusic BOOLEAN,
