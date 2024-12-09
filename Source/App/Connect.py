@@ -45,7 +45,7 @@ class Connect(ctk.CTkFrame):
             information = self.DBCommunicate.connect_User(username)
 
             if verify_pswd(password, information[1]):
-                _ = information[0]
+                self.controller.userID = information[0]
 
                 self.username_entry.delete(0, "end")
                 self.password_entry.delete(0, "end")

@@ -13,6 +13,7 @@ class App(ctk.CTk):
         super().__init__()
 
         try:
+            self.userID = None
             self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
         except DBCommunicateError as e:
             print(e)
