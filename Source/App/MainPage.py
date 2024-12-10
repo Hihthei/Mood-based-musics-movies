@@ -1,12 +1,7 @@
 import customtkinter as ctk
-from tkinter import messagebox
-import random
-import json
-
-from Source.Database.DBCommunicate import DBCommunicateError
 
 
-class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
+class MainPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -53,11 +48,11 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
         playlist_button = ctk.CTkButton(button_frame, text="Playlist manager", command=lambda: self.controller.show_frame("Playlist"))
         playlist_button.pack(pady=5)
 
+        self.search_entry = ctk.CTkEntry(button_frame, width=200, font=("Arial", 14))
+        self.search_entry.pack(pady=5, anchor="center")
+
         search = ctk.CTkButton(button_frame, text="Search", command=lambda: self.__search())
         search.pack(pady=5)
-
-        shuffle = ctk.CTkButton(button_frame, text="Shuffle", command=lambda: self.__shuffle())
-        shuffle.pack(pady=5)
 
     def __load_data(self):
         try:
@@ -67,19 +62,3 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
 
     def __search(self):
         pass
-
-    def __shuffle(self):
-        data = [
-                (
-                    self.__label.grid_info()['row'],[label.cget("text")
-                        for label in self.__tree.winfo_children()
-                        if label.grid_info()['row'] == row]
-            )
-            for row in range(len(self.__tree.winfo_children()))
-        ]
-        random.shuffle(data)
-
-        for i, (row, values) in enumerate(data):
-            for col, value in enumerate(values):
-                self.__label = [widget for widget in self.__tree.winfo_children() if widget.grid_info()['row'] == row and widget.grid_info()['column'] == col][0]
-                self.__label.grid(row=i, column=col)
