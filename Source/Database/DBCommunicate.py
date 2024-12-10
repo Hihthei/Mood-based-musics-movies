@@ -67,10 +67,6 @@ class DBCommunicate:
         return result[0]
 
     def add_User(self, username:str, hashPassword:str):
-        if not self.__database:
-            raise DBCommunicateError("Error Not Connected to Database", 3)
-        elif not self.__is_Table("Users"):
-            raise DBCommunicateError("Error Not Table", 20)
         try:
             if self.__is_User(username=username):
                 raise DBCommunicateError("Error User Exist", 22)
@@ -106,10 +102,6 @@ class DBCommunicate:
         self.__commit()
 
     def remove_User(self, username:str):
-        if not self.__database:
-            raise DBCommunicateError("Error Not Connected to Database", 3)
-        elif not self.__is_Table("Users"):
-            raise DBCommunicateError("Error Not Table", 20)
         try:
             if not self.__is_User(username=username):
                 raise DBCommunicateError("Error User Not Exist", 21)
@@ -121,6 +113,52 @@ class DBCommunicate:
         terminal.execute(command)
         terminal.close()
         self.__commit()
+
+    def assign_Mood_To_Content(self, userID:int, contentID:int, moodName:str):
+        try:
+            if not self.__is_User(userID=userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
+            if not self.__is_Content(contentID):
+                raise DBCommunicateError("Error Content Not Exist", 11)
+            if moodName not in self.get_MoodName():
+                raise DBCommunicateError(f"Error Mood {moodName} Not Exist", 31)
+        except DBCommunicateError as e:
+            raise e
+
+        terminal = self.__database.cursor()
+        command = f"""  SELECT COUNT(*) FROM UserTaste 
+                        WHERE userID = {userID} AND contentID = {contentID}"""
+        
+        terminal.execute(command)
+        result = terminal.fetchone()
+        terminal.close()
+
+        if result[0] == 0:
+            terminal = self.__database.cursor()
+            command = f"""  INSERT INTO UserTaste (userID, contentID, moodName)
+                            VALUES ({userID}, {contentID}, '{moodName}')"""
+            terminal.execute(command)
+            self.__commit()
+            terminal.close()
+
+    def update_Mood_For_Content(self, userID:int, contentID:int, newMoodName:str):
+        try:
+            if not self.__is_User(userID=userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
+            if not self.__is_Content(contentID):
+                raise DBCommunicateError("Error Content Not Exist", 11)
+            if newMoodName not in self.get_MoodName():
+                raise DBCommunicateError(f"Error Mood {newMoodName} Not Exist", 31)
+        except DBCommunicateError as e:
+            raise e
+
+        terminal = self.__database.cursor()
+        command = f"""  UPDATE UserTaste
+                        SET moodName = '{newMoodName}'
+                        WHERE userID = {userID} AND contentID = {contentID}"""
+        terminal.execute(command)
+        self.__commit()
+        terminal.close()
 
     def add_Playlist(self, userID:int, playlistName:str):
         try:
@@ -166,15 +204,18 @@ class DBCommunicate:
         self.__commit()
         terminal.close()
     
-    def remove_Playlist(self, playlistName:str):
+    def remove_Playlist(self, userID:int, playlistName:str):
         try:
             if not self.__is_Playlist(playlistName):
                 raise DBCommunicateError("Error Playlist Not Exist", 52)
+            elif not self.__is_Authorize(userID, playlistName):
+                return False
         except DBCommunicateError as e:
             raise e
         
         terminal = self.__database.cursor()
         try:
+            self.remove_Playlist_All(userID, playlistName)
             playlistID = self.get_PlaylistID(playlistName)
             command = f"DELETE FROM UsersAuthorization WHERE UsersAuthorization.playlistID = {playlistID}"
             terminal.execute(command)
@@ -204,6 +245,76 @@ class DBCommunicate:
         self.__commit()
         terminal.close()
 
+    def remove_Playlist_All(self, userID:int, playlistName:str):
+        try:
+            if not self.__is_Table("ContentRelation"):
+                raise DBCommunicateError("Error Not Table", 10)
+            elif not self.__is_User(userID=userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
+            elif not self.__is_Playlist(playlistName):
+                raise DBCommunicateError("Error Playlist Not Exist", 51)
+            elif not self.__is_Authorize(userID, playlistName):
+                return False
+            playlistID = self.get_PlaylistID(playlistName)
+        except DBCommunicateError as e:
+            raise e
+        
+        terminal = self.__database.cursor()
+        command = f"DELETE FROM ContentRelation WHERE ContentRelation.playlistID = {playlistID}"
+        terminal.execute(command)
+        self.__commit()
+        terminal.close()
+
+    def add_Authorization(self, userID:int, new_userID:int, playlistName:str):
+        try:
+            if not self.__is_Playlist(playlistName):
+                raise DBCommunicateError("Error Playlist Not Exist", 52)
+            elif not self.__is_User(userID=userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
+            elif self.__is_Authorize(new_userID, playlistName):
+                raise DBCommunicateError("Error User Already Authorized", 62)
+            elif not self.__is_Authorize(userID, playlistName):
+                raise DBCommunicateError("Error User Cant Modifed Authorization", 64)
+            playlistID = self.get_PlaylistID(playlistName)
+
+            terminal = self.__database.cursor()
+            command = f"INSERT INTO UsersAuthorization (userID, playlistID, authorization) VALUES ({new_userID}, {playlistID}, 1)"
+            terminal.execute(command)
+            self.__commit()
+            terminal.close()
+        except DBCommunicateError as e:
+            raise e
+
+    def remove_Authorization(self, userID:int, remove_userID:int, playlistName:str):
+        try:
+            if not self.__is_Playlist(playlistName):
+                raise DBCommunicateError("Error Playlist Not Exist", 52)
+            elif not self.__is_User(userID=userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
+            elif not self.__is_Authorize(remove_userID, playlistName):
+                raise DBCommunicateError("Error User Not Authorized", 61)
+            elif not self.__is_Authorize(userID, playlistName):
+                raise DBCommunicateError("Error User Cant Modifed Authorization", 64)
+            
+            playlistID = self.get_PlaylistID(playlistName)
+            
+            terminal = self.__database.cursor()
+            command = f"DELETE FROM UsersAuthorization WHERE userID = {userID} AND playlistID = {playlistID}"
+            terminal.execute(command)
+            self.__commit()
+            terminal.close()
+
+            command = f"SELECT COUNT(*) FROM UsersAuthorization WHERE playlistID = {playlistID}"
+            terminal.execute(command)
+            count = terminal.fetchone()[0]
+            terminal.close()
+            
+            if count == 0:
+                self.remove_Playlist(userID, playlistName)
+
+        except DBCommunicateError as e:
+            raise e
+
     def get_MoodName(self) -> list:
         if not self.__database:
             raise DBCommunicateError("Error Not Connected to Database", 3)
@@ -216,6 +327,20 @@ class DBCommunicate:
         terminal.close()
         return list(i[0] for i in result)
 
+    def get_UserID(self, userName:str) -> int:
+        try:
+            if not self.__is_User(username=userName):
+                raise DBCommunicateError("Error User Not Exist", 21)
+        except DBCommunicateError as e:
+            raise e
+        
+        terminal = self.__database.cursor()
+        command = f"SELECT UsersID.userName FROM UsersID WHERE Users.userName = {userName}"
+        terminal.execute(command)
+        result = terminal.fetchall()
+        terminal.close()
+        return result
+        
     def get_PlaylistID(self, playlistName:str) -> int:
         try:
             if not self.__is_Playlist(playlistName):
@@ -239,7 +364,7 @@ class DBCommunicate:
         print(terminal.fetchall())
         terminal.close()
 
-    def show_Content(self, title:list = None, author:list = None, isMusic:bool = None):
+    def show_Content(self, title:list = None, author:list = None, isMusic:bool = None) -> list:
         if not self.__database:
             raise DBCommunicateError("Error Not Connected to Database", 3)
         elif not self.__is_Table("Content"):
@@ -285,7 +410,7 @@ class DBCommunicate:
             terminal.close()
             raise DBCommunicateError("Error Unknow", 0)
         
-    def show_Content_Mood(self, userID:int, moodName:str = None):
+    def show_Content_Mood(self, userID:int, moodName:str = None) -> list:
         if not self.__database:
             raise DBCommunicateError("Error Not Connected to Database", 3)
         elif not self.__is_Table("UsersTaste"):
@@ -337,28 +462,51 @@ class DBCommunicate:
         terminal.close()
         return result
 
-    def show_Playlist(self, userID:int, playlistName:str):
+    def show_Playlist(self, userID:int) -> list:
         try:
-            if self.__is_Playlist(playlistName):
-                raise DBCommunicateError("Error Playlist Already Exist", 51)
-            elif not self.__is_Table("ContentRelation"):
-                raise DBCommunicateError("Error Not Table", 70)
+            if not self.__is_Table("Playlist"):
+                raise DBCommunicateError("Error Not Table", 50)
+            elif not self.__is_User(userID==userID):
+                raise DBCommunicateError("Error User Not Exist", 21)
         except DBCommunicateError as e:
             raise e
         
-        # TODO
-
-    def show_Users(self):
-        if not self.__database:
-            raise DBCommunicateError("Error Not Connected to Database", 3)
-        elif not self.__is_Table("Users"):
-            raise DBCommunicateError("Error Not Table", 20)
-
         terminal = self.__database.cursor()
-        terminal.execute("select * from Users")
-        print(terminal.fetchall())
-
+        command = f"""  SELECT p.playlistName
+                        FROM Playlist p
+                        INNER JOIN
+                        (SELECT ua.playlistID
+                        FROM UsersAuthorization ua
+                        WHERE ua.userID = {userID}) ua
+                        on p.playlistID = ua.playlistID;"""
+        terminal.execute(command)
+        result = terminal.fetchall()
         terminal.close()
+        return result
+
+    def show_Playlist_Content(self, userID:int, playlistName:str) -> list:
+        try:
+            if not self.__is_Table("Content"):
+                raise DBCommunicateError("Error Not Table", 10)
+            elif not self.__is_Table("ContentRelation"):
+                raise DBCommunicateError("Error Not Table", 70)
+            elif not self.__is_Authorize(userID, playlistName):
+                return False
+            playlistID = self.get_PlaylistID(playlistName)
+        except DBCommunicateError as e:
+            raise e
+        
+        terminal = self.__database.cursor()
+        command = f"""  SELECT c.title, c.title, c.isMusic
+                        FROM content c
+                        INNER JOIN (
+                        SELECT cr.contentID
+                        FROM contentrelation cr
+                        WHERE cr.playlistID = {playlistID}) cr on c.contentID = cr.contentID"""
+        terminal.execute(command)
+        result = terminal.fetchall()
+        terminal.close()
+        return result
 
     def __is_Table(self, Name:str) -> bool:
         if not self.__database:
@@ -473,13 +621,6 @@ class DBCommunicate:
 
 try:
     dbCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
-    dbCommunicate.add_Playlist(3, "New")
-    print(dbCommunicate.add_Playlist_Content(3, "New", 1))
-    print(dbCommunicate.add_Playlist_Content(3, "New", 2))
-    print(dbCommunicate.add_Playlist_Content(3, "New", 3))
-    print(dbCommunicate.remove_Playlist_Content(3, "New", 1))
-    print(dbCommunicate.remove_Playlist_Content(3, "New", 2))
-    print(dbCommunicate.remove_Playlist_Content(3, "New", 3))
-    dbCommunicate.remove_Playlist("New")
+    dbCommunicate.remove_Playlist(3, "test")
 except DBCommunicateError as e:
     print(e)
