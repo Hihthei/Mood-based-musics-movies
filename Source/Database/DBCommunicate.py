@@ -126,8 +126,8 @@ class DBCommunicate:
             raise e
 
         terminal = self.__database.cursor()
-        command = f"""  SELECT COUNT(*) FROM UserTaste 
-                        WHERE userID = {userID} AND contentID = {contentID}"""
+        command = f"""  SELECT COUNT(*) FROM UsersTaste 
+                        WHERE UsersTaste.userID = {userID} AND UsersTaste.contentID = {contentID}"""
         
         terminal.execute(command)
         result = terminal.fetchone()
@@ -135,7 +135,7 @@ class DBCommunicate:
 
         if result[0] == 0:
             terminal = self.__database.cursor()
-            command = f"""  INSERT INTO UserTaste (userID, contentID, moodName)
+            command = f"""  INSERT INTO UsersTaste (userID, contentID, moodName)
                             VALUES ({userID}, {contentID}, '{moodName}')"""
             terminal.execute(command)
             self.__commit()
@@ -153,9 +153,9 @@ class DBCommunicate:
             raise e
 
         terminal = self.__database.cursor()
-        command = f"""  UPDATE UserTaste
-                        SET moodName = '{newMoodName}'
-                        WHERE userID = {userID} AND contentID = {contentID}"""
+        command = f"""  UPDATE UsersTaste
+                        SET UsersTaste.moodName = '{newMoodName}'
+                        WHERE UsersTaste.userID = {userID} AND UsersTaste.contentID = {contentID}"""
         terminal.execute(command)
         self.__commit()
         terminal.close()
@@ -621,6 +621,5 @@ class DBCommunicate:
 
 try:
     dbCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
-    dbCommunicate.remove_Playlist(3, "test")
 except DBCommunicateError as e:
     print(e)
