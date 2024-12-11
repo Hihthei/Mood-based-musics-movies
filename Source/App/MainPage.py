@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from Source.App.PlaylistManager import Playlist
+
 
 class MainPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -57,8 +59,15 @@ class MainPage(ctk.CTkFrame):
     def __load_data(self):
         try:
             self.__data = self.controller.DBCommunicate.show_Content()
-        except FileNotFoundError:
+
+            if self.__data is None:
+                self.__data = []
+
+        except Exception as e:
             self.__data = []
+
+    def __playlist_manager(self):
+        pass
 
     def __search(self):
         pass
