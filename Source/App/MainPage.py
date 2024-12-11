@@ -1,6 +1,9 @@
 import customtkinter as ctk
+from tkinter import messagebox
 import random
 import json
+
+from Source.Database.DBCommunicate import DBCommunicateError
 
 
 class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
@@ -28,7 +31,7 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
 
     def __grid_config(self):
         frames = ctk.CTkFrame(self)
-        frames.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        frames.grid(row=1, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         frames.grid_rowconfigure(0, weight=1)
         frames.grid_columnconfigure(0, weight=1)
@@ -38,10 +41,11 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
 
         self.__load_data()
 
-        for i, (key, (title, content_type, mood)) in enumerate(self.__data.items()):
+        for i, (title, author,  isMusic, moodName) in enumerate(self.__data):
             ctk.CTkLabel(self.__tree, text=title).grid(row=i, column=0, padx=5, pady=5)
-            ctk.CTkLabel(self.__tree, text=content_type).grid(row=i, column=1, padx=5, pady=5)
-            ctk.CTkLabel(self.__tree, text=mood).grid(row=i, column=2, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text=author).grid(row=i, column=1, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text="Music" if isMusic else "Movie").grid(row=i, column=2, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text=moodName).grid(row=i, column=3, padx=5, pady=5)
 
         button_frame = ctk.CTkFrame(self)
         button_frame.grid(row=1, column=2, padx=10, pady=10, sticky="ns")
@@ -57,10 +61,9 @@ class MainPage(ctk.CTkFrame):  # Conversion en CTkFrame
 
     def __load_data(self):
         try:
-            with open('tmp_songs_base.json', 'r') as file:
-                self.__data = json.load(file)
+            self.__data = self.controller.DBCommunicate.show_Content()
         except FileNotFoundError:
-            self.__data = {}
+            self.__data = []
 
     def __search(self):
         pass

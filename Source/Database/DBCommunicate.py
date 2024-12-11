@@ -371,7 +371,7 @@ class DBCommunicate:
             raise DBCommunicateError("Error Not Table", 10)
         
         terminal = self.__database.cursor()
-        command = "SELECT Content.title, Content.author, Content.isMusic FROM Content"
+        command = "SELECT Content.title, Content.author, Content.isMusic, Content.moodName FROM Content"
         if title or author or isMusic != None:
             command += " WHERE "
         if title:
@@ -431,7 +431,7 @@ class DBCommunicate:
                             SELECT ut.contentID, ut.moodName
                             FROM userstaste ut
                             WHERE ut.contentID = 1) ut
-                            ON ut.contentID = g.contentID;"""
+                            ON ut.contentID = g.contentID"""
         else:
             command = f"""  SELECT g.title, g.author, g.isMusic, coalesce(ut.moodName, g.moodName) as moodName
                             FROM global_taste g
@@ -440,7 +440,7 @@ class DBCommunicate:
                             FROM userstaste ut
                             WHERE ut.contentID = 1) ut
                             ON ut.contentID = g.contentID
-                            WHERE coalesce(ut.moodName, g.moodName) = {moodName};"""
+                            WHERE coalesce(ut.moodName, g.moodName) = {moodName}"""
         
         terminal.execute(command)
         result = terminal.fetchall()
@@ -451,7 +451,7 @@ class DBCommunicate:
         try:
             if not self.__is_Table("Playlist"):
                 raise DBCommunicateError("Error Not Table", 50)
-            elif not self.__is_User(userID==userID):
+            elif not self.__is_User(userID=userID):
                 raise DBCommunicateError("Error User Not Exist", 21)
         except DBCommunicateError as e:
             raise e
@@ -603,3 +603,6 @@ class DBCommunicate:
         except mysql.connector.Error as e:
             self.__database.rollback()
             raise DBCommunicateError("Error Commit Failed", 100)
+
+# db = DBCommunicate("root", "!Cd2@5Cprb")
+# print(db.show_Content())
