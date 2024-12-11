@@ -1,5 +1,9 @@
 import customtkinter as ctk
+
+from Source.App.PlaylistManager import Playlist
+
 from Source.Database.DBCommunicate import DBCommunicateError
+
 
 class MainPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -52,8 +56,15 @@ class MainPage(ctk.CTkFrame):
     def __load_data(self):
         try:
             self.__data = self.controller.DBCommunicate.show_Content()
-        except DBCommunicateError as e:
+
+            if self.__data is None:
+                self.__data = []
+
+        except Exception as e:
             self.__data = []
+
+    def __playlist_manager(self):
+        pass
 
     def __update_tree(self):
         for widget in self.__tree.winfo_children():
@@ -64,6 +75,7 @@ class MainPage(ctk.CTkFrame):
             ctk.CTkLabel(self.__tree, text=author).grid(row=i, column=1, padx=5, pady=5)
             ctk.CTkLabel(self.__tree, text="Music" if isMusic else "Movie").grid(row=i, column=2, padx=5, pady=5)
             ctk.CTkLabel(self.__tree, text=moodName).grid(row=i, column=3, padx=5, pady=5)
+
 
     def __search(self):
         try:
