@@ -75,6 +75,7 @@ class DBCommunicate:
         
         terminal = self.__database.cursor()
         command = f"INSERT INTO Users (userName, hashPassword) VALUES ('{username}', '{hashPassword}')"
+        print(command)
         terminal.execute(command)
         terminal.close()
         self.__commit()
@@ -417,15 +418,16 @@ class DBCommunicate:
                             WHERE ut.contentID = 1) ut
                             ON ut.contentID = g.contentID"""
         else:
-            command = f"""  SELECT g.title, g.author, g.isMusic, coalesce(ut.moodName, g.moodName) as moodName
+            command = f"""  SELECT g.title, g.author, g.isMusic, coalesce(g.moodName, ut.moodName) as moodName
                             FROM global_taste g
                             LEFT OUTER JOIN(
                             SELECT ut.contentID, ut.moodName
                             FROM userstaste ut
                             WHERE ut.contentID = 1) ut
                             ON ut.contentID = g.contentID
-                            WHERE coalesce(ut.moodName, g.moodName) = {moodName}"""
+                            WHERE coalesce(g.moodName, ut.moodName) LIKE '%{moodName}%'"""
         
+        print(command)
         terminal.execute(command)
         result = terminal.fetchall()
         terminal.close()
