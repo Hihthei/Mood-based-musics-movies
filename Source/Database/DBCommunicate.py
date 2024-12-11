@@ -364,7 +364,7 @@ class DBCommunicate:
         print(terminal.fetchall())
         terminal.close()
 
-    def show_Content(self, title:list = None, author:list = None, isMusic:bool = None) -> list:
+    def show_Content(self, title:str = None, author:str = None, isMusic:bool = None) -> list:
         if not self.__database:
             raise DBCommunicateError("Error Not Connected to Database", 3)
         elif not self.__is_Table("Content"):
@@ -375,27 +375,11 @@ class DBCommunicate:
         if title or author or isMusic != None:
             command += " WHERE "
         if title:
-            command += "Content.title in ("
-            first = True
-            for i in title:
-                if first:
-                    command += f"'{i}'"
-                    first = False
-                else:
-                    command += f", '{i}'"
-            command += ")"
+            command += f"Content.title LIKE ('%{title}%')"
         if author:
             if title:
                 command += " and "
-            command += "Content.author in ("
-            first = True
-            for i in author:
-                if first:
-                    command += f"'{i}'"
-                    first = False
-                else:
-                    command += f", '{i}'"
-            command += ")"
+            command += f"Content.author LIKE ('%{author}%')"
             if isMusic != None:
                 command += " and "
         if isMusic != None:
@@ -479,6 +463,8 @@ class DBCommunicate:
                 return False
             playlistID = self.get_PlaylistID(playlistName)
         except DBCommunicateError as e:
+            if e.code == 52:
+                return []
             raise e
         
         terminal = self.__database.cursor()

@@ -2,6 +2,8 @@ import customtkinter as ctk
 
 from Source.App.PlaylistManager import Playlist
 
+from Source.Database.DBCommunicate import DBCommunicateError
+
 
 class MainPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -37,12 +39,7 @@ class MainPage(ctk.CTkFrame):
         self.__tree.grid(row=0, column=0, sticky="nsew")
 
         self.__load_data()
-
-        for i, (title, author,  isMusic, moodName) in enumerate(self.__data):
-            ctk.CTkLabel(self.__tree, text=title).grid(row=i, column=0, padx=5, pady=5)
-            ctk.CTkLabel(self.__tree, text=author).grid(row=i, column=1, padx=5, pady=5)
-            ctk.CTkLabel(self.__tree, text="Music" if isMusic else "Movie").grid(row=i, column=2, padx=5, pady=5)
-            ctk.CTkLabel(self.__tree, text=moodName).grid(row=i, column=3, padx=5, pady=5)
+        self.__update_tree()
 
         button_frame = ctk.CTkFrame(self)
         button_frame.grid(row=1, column=2, padx=10, pady=10, sticky="ns")
@@ -69,5 +66,21 @@ class MainPage(ctk.CTkFrame):
     def __playlist_manager(self):
         pass
 
+    def __update_tree(self):
+        for widget in self.__tree.winfo_children():
+            widget.destroy()
+
+        for i, (title, author, isMusic, moodName) in enumerate(self.__data):
+            ctk.CTkLabel(self.__tree, text=title).grid(row=i, column=0, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text=author).grid(row=i, column=1, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text="Music" if isMusic else "Movie").grid(row=i, column=2, padx=5, pady=5)
+            ctk.CTkLabel(self.__tree, text=moodName).grid(row=i, column=3, padx=5, pady=5)
+
+
     def __search(self):
-        pass
+        try:
+            self.__data = self.controller.DBCommunicate.show_Content(title=self.search_entry.get())
+        except DBCommunicateError as e:
+            self.__data = []
+
+        self.__update_tree()
