@@ -425,37 +425,22 @@ class DBCommunicate:
         
         terminal = self.__database.cursor()
         if not moodName:
-            command = f"""  SELECT c.title, COALESCE(mf.moodName, um.moodName) AS moodName, c.isMusic
-                            FROM content c
-                            JOIN (
-                                SELECT um.contentID, um.moodName, 
-                                    RANK() OVER (PARTITION BY um.contentID ORDER BY COUNT(*) DESC) AS rang
-                                FROM userstaste um
-                                GROUP BY um.contentID, um.moodName
-                                ORDER BY COUNT(*) DESC
-                            ) um ON c.contentID = um.contentID
-                            LEFT JOIN (
-                                SELECT mf.contentID, mf.moodName
-                                FROM userstaste mf
-                                WHERE mf.userID = {userID}
-                            ) mf ON c.contentID = mf.contentID
-                            WHERE um.rang = 1"""
+            command = f"""  SELECT g.title, g.author, g.isMusic, coalesce(ut.moodName, g.moodName) as moodName
+                            FROM global_taste g
+                            LEFT OUTER JOIN(
+                            SELECT ut.contentID, ut.moodName
+                            FROM userstaste ut
+                            WHERE ut.contentID = 1) ut
+                            ON ut.contentID = g.contentID;"""
         else:
-            command = f"""  SELECT c.title, COALESCE(mf.moodName, um.moodName) AS moodName, c.isMusic
-                            FROM content c
-                            JOIN (
-                                SELECT um.contentID, um.moodName, 
-                                    RANK() OVER (PARTITION BY um.contentID ORDER BY COUNT(*) DESC) AS rang
-                                FROM userstaste um
-                                GROUP BY um.contentID, um.moodName
-                                ORDER BY COUNT(*) DESC
-                            ) um ON c.contentID = um.contentID
-                            LEFT JOIN (
-                                SELECT mf.contentID, mf.moodName
-                                FROM userstaste mf
-                                WHERE mf.userID = {userID}
-                            ) mf ON c.contentID = mf.contentID
-                            WHERE COALESCE(mf.moodName, um.moodName) = '{moodName}' AND um.rang = 1"""
+            command = f"""  SELECT g.title, g.author, g.isMusic, coalesce(ut.moodName, g.moodName) as moodName
+                            FROM global_taste g
+                            LEFT OUTER JOIN(
+                            SELECT ut.contentID, ut.moodName
+                            FROM userstaste ut
+                            WHERE ut.contentID = 1) ut
+                            ON ut.contentID = g.contentID
+                            WHERE coalesce(ut.moodName, g.moodName) = {moodName};"""
         
         terminal.execute(command)
         result = terminal.fetchall()
@@ -618,8 +603,3 @@ class DBCommunicate:
         except mysql.connector.Error as e:
             self.__database.rollback()
             raise DBCommunicateError("Error Commit Failed", 100)
-
-try:
-    dbCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
-except DBCommunicateError as e:
-    print(e)
