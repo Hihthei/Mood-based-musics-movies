@@ -9,12 +9,12 @@ from Source.Database.DBCommunicate import DBCommunicateError, DBCommunicate
 
 
 class App(ctk.CTk):
-    def __init__(self):
+    def __init__(self, password):
         super().__init__()
 
         try:
             self.userID = None
-            self.DBCommunicate = DBCommunicate("root", "!Cd2@5Cprb")
+            self.DBCommunicate = DBCommunicate("root", password)
         except DBCommunicateError as e:
             print(e)
             self.quit()
@@ -57,5 +57,6 @@ class App(ctk.CTk):
             ctk.set_appearance_mode("light")
 
 
-app = App()
+db_password = "Wygpun09!GbStLmAo"
+app = App(db_password)
 app.mainloop()
